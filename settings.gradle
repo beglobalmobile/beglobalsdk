@@ -1,0 +1,21 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'https://jitpack.io'
+            credentials { username "jp_7n01f54jh15tek9vb60gmnb9rp" }
+        }
+    }
+}
+rootProject.name = "BeGlobal"
+include ':app'
+include ':BeGlobal'

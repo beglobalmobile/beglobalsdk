@@ -1,0 +1,70 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+}
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 32
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    namespace 'com.rtb.beglobal'
+}
+
+ext {
+    retrofit = "2.9.0"
+    okhttp = '5.0.0-alpha.9'
+}
+
+dependencies {
+    //noinspection GradleDependency
+    implementation "androidx.appcompat:appcompat:1.5.1"
+    implementation "com.google.android.gms:play-services-ads:22.0.0"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation 'org.prebid:prebid-mobile-sdk:2.1.0'
+    implementation 'com.google.ads.mediation:inmobi:10.5.4.1'
+    implementation 'com.github.appharbr:appharbr-android-sdk:2.10.3'
+    //noinspection GradleDependency
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.beglobalmobile'
+            artifactId = 'beglobalsdk'
+            version = '1.0.0'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}

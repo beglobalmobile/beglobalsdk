@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BannerAdView">
+        <attr name="adSize" format="string" />
+        <attr name="adSizes" format="string" />
+        <attr name="adUnitId" format="string" />
+        <attr name="adType" format="string" />
+    </declare-styleable>
+</resources>
