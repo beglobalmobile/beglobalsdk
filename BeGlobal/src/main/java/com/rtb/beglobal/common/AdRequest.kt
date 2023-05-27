@@ -16,6 +16,8 @@ class AdRequest {
         }
     }
 
+    fun getBuilder() = Builder()
+
     @SuppressLint("VisibleForTests")
     inner class Builder {
         private val requestBuilder: AdManagerAdRequest.Builder = AdManagerAdRequest.Builder()

@@ -11,6 +11,7 @@ import com.google.android.gms.ads.AdapterResponseInfo
 import com.google.android.gms.ads.admanager.AdManagerAdRequest
 import com.rtb.beglobal.common.AdRequest
 import com.rtb.beglobal.common.AdTypes
+import com.rtb.beglobal.common.connectionAvailable
 import com.rtb.beglobal.sdk.BannerManagerListener
 import com.rtb.beglobal.sdk.BeGlobal
 import com.rtb.beglobal.sdk.ConfigSetWorker
@@ -34,7 +35,6 @@ internal class BannerManager(
     private val storeService = BeGlobal.getStoreService(context)
     private var isForegroundRefresh = 1
     private var overridingUnit: String? = null
-
 
     init {
         sdkConfig = storeService.config
@@ -368,7 +368,7 @@ internal class BannerManager(
             bannerListener.attachAdView(getAdUnitName(unfilled, false), bannerConfig.adSizes)
             loadAd(active, unfilled)
         }
-        if (isForegroundRefresh == 0 && bannerConfig.factor < 0) {
+        if (context.connectionAvailable() == false || (isForegroundRefresh == 0 && bannerConfig.factor < 0)) {
             startRefreshing(timers = timers)
         } else {
             if (unfilled || ((bannerConfig.isVisible || (differenceOfLastRefresh >= (if (active == 1) bannerConfig.activeRefreshInterval else bannerConfig.passiveRefreshInterval) * bannerConfig.factor))

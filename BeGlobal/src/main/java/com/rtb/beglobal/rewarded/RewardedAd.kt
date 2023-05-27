@@ -31,7 +31,7 @@ class RewardedAd(private val context: Activity, private val adUnit: String) {
         if (mRewardedAd != null) {
             mRewardedAd?.show(context) { callBack(Reward(it.amount, it.type)) }
         } else {
-            LogLevel.ERROR.log("The rewarded interstitial ad wasn't ready yet.")
+            LogLevel.ERROR.log(msg = "The rewarded interstitial ad wasn't ready yet.")
             callBack(null)
         }
     }

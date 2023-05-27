@@ -3,7 +3,7 @@ package com.rtb.beglobal.common
 internal const val TAG = "Ads"
 
 internal object URLs {
-    const val BASE_URL = "https://prebid.andbeyond.media/"
+     const val BASE_URL = "https://prebid.andbeyond.media/"
 }
 
 object AdTypes {

@@ -5,11 +5,11 @@ import com.rtb.beglobal.common.LogLevel
 import com.rtb.beglobal.common.TAG
 
 
-internal fun LogLevel.log(msg: String) {
+internal fun LogLevel.log(tag: String = TAG, msg: String) {
     if (!BeGlobal.logEnabled()) return
     when (this) {
-        LogLevel.INFO -> Log.i(TAG, msg)
-        LogLevel.DEBUG -> Log.d(TAG, msg)
-        LogLevel.ERROR -> Log.e(TAG, msg)
+        LogLevel.INFO -> Log.i(tag, msg)
+        LogLevel.DEBUG -> Log.d(tag, msg)
+        LogLevel.ERROR -> Log.e(tag, msg)
     }
 }

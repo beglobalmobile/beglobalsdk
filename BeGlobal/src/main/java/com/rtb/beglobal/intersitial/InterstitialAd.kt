@@ -23,7 +23,7 @@ class InterstitialAd(private val context: Activity, private val adUnit: String) 
         if (mInterstitialAd != null) {
             mInterstitialAd?.show(context)
         } else {
-            LogLevel.ERROR.log("The interstitial ad wasn't ready yet.")
+            LogLevel.ERROR.log(msg = "The interstitial ad wasn't ready yet.")
         }
     }
 

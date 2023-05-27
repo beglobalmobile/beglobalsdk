@@ -78,7 +78,7 @@ class AppOpenAdManager(private val context: Context, private var adUnit: String)
         isLoadingAd = true
         AppOpenAd.load(context, adUnit, adRequest, object : AppOpenAd.AppOpenAdLoadCallback() {
             override fun onAdLoaded(ad: AppOpenAd) {
-                LogLevel.INFO.log("AppOpen ad loaded")
+                LogLevel.INFO.log(msg = "AppOpen ad loaded")
                 appOpenAd = ad
                 isLoadingAd = false
                 loadTime = Date().time
@@ -86,7 +86,7 @@ class AppOpenAdManager(private val context: Context, private var adUnit: String)
             }
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                LogLevel.ERROR.log(loadAdError.message)
+                LogLevel.ERROR.log(msg = loadAdError.message)
                 isLoadingAd = false
                 val tempStatus = firstLook
                 if (firstLook) {
@@ -229,11 +229,11 @@ class AppOpenAdManager(private val context: Context, private var adUnit: String)
 
     fun showAdIfAvailable(activity: Activity, onShowAdCompleteListener: OnShowAdCompleteListener) {
         if (isShowingAd) {
-            LogLevel.INFO.log("The app open ad is already showing.")
+            LogLevel.INFO.log(msg = "The app open ad is already showing.")
             return
         }
         if (!isAdAvailable()) {
-            LogLevel.ERROR.log("The app open ad is not ready yet.")
+            LogLevel.ERROR.log(msg = "The app open ad is not ready yet.")
             onShowAdCompleteListener.onShowAdComplete()
             load(activity)
             return
@@ -250,7 +250,7 @@ class AppOpenAdManager(private val context: Context, private var adUnit: String)
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 fullScreenContentCallback?.onAdFailedToShowFullScreenContent(adError.message)
-                LogLevel.ERROR.log(adError.message)
+                LogLevel.ERROR.log(msg = adError.message)
                 appOpenAd = null
                 isShowingAd = false
                 onShowAdCompleteListener.onShowAdComplete()

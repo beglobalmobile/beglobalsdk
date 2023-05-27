@@ -148,7 +148,7 @@ class BannerAdView : LinearLayout, BannerManagerListener {
 
     private fun addGeoEdge() {
         AppHarbr.addBannerView(AdSdk.GAM, adView) { _, _, _, reasons ->
-            LogLevel.INFO.log("AppHarbr - On Banner Blocked $reasons")
+            LogLevel.INFO.log(msg = "AppHarbr - On Banner Blocked $reasons")
         }
     }
 

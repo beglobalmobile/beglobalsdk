@@ -120,7 +120,7 @@ internal class ConfigSetWorker(private val context: Context, params: WorkerParam
                 } ?: Result.failure()
             }
         } catch (e: Exception) {
-            LogLevel.ERROR.log(e.message ?: "")
+            LogLevel.ERROR.log(msg = e.message ?: "")
             storeService.config?.let {
                 Result.success()
             } ?: Result.failure()
@@ -144,7 +144,7 @@ internal object SDKManager {
         PrebidMobile.setPrebidServerHost(Host.createCustomHost(prebid?.host ?: ""))
         PrebidMobile.setPrebidServerAccountId(prebid?.accountId ?: "")
         PrebidMobile.setTimeoutMillis(prebid?.timeout?.toIntOrNull() ?: 1000)
-        PrebidMobile.initializeSdk(context) { LogLevel.INFO.log("Prebid Initialization Completed") }
+        PrebidMobile.initializeSdk(context) { LogLevel.INFO.log(msg = "Prebid Initialization Completed") }
         prebid?.schain?.let {
             TargetingParams.setUserExt(Ext().apply {
                 put("schain", it)
@@ -154,7 +154,7 @@ internal object SDKManager {
 
     private fun initializeGAM(context: Context) {
         MobileAds.initialize(context) {
-            LogLevel.INFO.log("GAM Initialization complete.")
+            LogLevel.INFO.log(msg = "GAM Initialization complete.")
         }
     }
 
@@ -166,11 +166,11 @@ internal object SDKManager {
             configuration,
             object : OnAppHarbrInitializationCompleteListener {
                 override fun onSuccess() {
-                    LogLevel.INFO.log("AppHarbr SDK Initialized Successfully")
+                    LogLevel.INFO.log(msg = "AppHarbr SDK Initialized Successfully")
                 }
 
                 override fun onFailure(reason: InitializationFailureReason) {
-                    LogLevel.ERROR.log("AppHarbr SDK Initialization Failed: ${reason.readableHumanReason}")
+                    LogLevel.ERROR.log(msg = "AppHarbr SDK Initialization Failed: ${reason.readableHumanReason}")
                 }
 
             })
