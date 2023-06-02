@@ -14,6 +14,9 @@ class BeGlobalAdapter : Adapter() {
 
     private lateinit var bannerLoader: BeGlobalBannerLoader
     private lateinit var interstitialLoader: BeGlobalInterstitialLoader
+    private lateinit var rewardedLoaded: RewardedLoader
+    private lateinit var rewardedInterstitialLoader: RewardedInterstitialLoader
+    private lateinit var appOpenAdLoader: AppOpenAdLoader
     private val TAG: String = this::class.java.simpleName
 
     companion object {
@@ -66,12 +69,33 @@ class BeGlobalAdapter : Adapter() {
     }
 
     override fun loadInterstitialAd(
-        mediationInterstitialAdConfiguration: MediationInterstitialAdConfiguration,
-        callback: MediationAdLoadCallback<MediationInterstitialAd, MediationInterstitialAdCallback>
+            mediationInterstitialAdConfiguration: MediationInterstitialAdConfiguration,
+            callback: MediationAdLoadCallback<MediationInterstitialAd, MediationInterstitialAdCallback>
     ) {
         LogLevel.INFO.log(TAG, "loadInterstitialAd:")
         interstitialLoader =
-            BeGlobalInterstitialLoader(mediationInterstitialAdConfiguration, callback)
+                BeGlobalInterstitialLoader(mediationInterstitialAdConfiguration, callback)
         interstitialLoader.loadAd()
+    }
+
+    override fun loadAppOpenAd(mediationAppOpenAdConfiguration: MediationAppOpenAdConfiguration, callback: MediationAdLoadCallback<MediationAppOpenAd, MediationAppOpenAdCallback>) {
+        LogLevel.INFO.log(TAG, "loadAppOpenAd:")
+        appOpenAdLoader = AppOpenAdLoader(mediationAppOpenAdConfiguration, callback)
+        appOpenAdLoader.loadAd()
+    }
+
+    override fun loadRewardedAd(mediationRewardedAdConfiguration: MediationRewardedAdConfiguration, callback: MediationAdLoadCallback<MediationRewardedAd, MediationRewardedAdCallback>) {
+        LogLevel.INFO.log(TAG, "loadRewardedAd:")
+        rewardedLoaded = RewardedLoader(mediationRewardedAdConfiguration, callback)
+        rewardedLoaded.loadAd()
+    }
+
+    override fun loadRewardedInterstitialAd(mediationRewardedAdConfiguration: MediationRewardedAdConfiguration, callback: MediationAdLoadCallback<MediationRewardedAd, MediationRewardedAdCallback>) {
+        LogLevel.INFO.log(TAG, "loadRewardedInterstitialAd:")
+        rewardedInterstitialLoader = RewardedInterstitialLoader(
+            mediationRewardedAdConfiguration,
+            callback
+        )
+        rewardedInterstitialLoader.loadAd()
     }
 }

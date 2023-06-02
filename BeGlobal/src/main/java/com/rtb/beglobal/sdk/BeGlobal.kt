@@ -53,9 +53,9 @@ object BeGlobal {
         @Synchronized
         if (configService == null) {
             val client = OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(5, TimeUnit.SECONDS).hostnameVerifier { _, _ -> true }.build()
+                    .connectTimeout(3, TimeUnit.SECONDS)
+                    .writeTimeout(3, TimeUnit.SECONDS)
+                    .readTimeout(3, TimeUnit.SECONDS).hostnameVerifier { _, _ -> true }.build()
             configService = Retrofit.Builder().baseUrl(BASE_URL).client(client)
                 .addConverterFactory(GsonConverterFactory.create()).build()
                 .create(ConfigService::class.java)

@@ -2,6 +2,7 @@ package com.rtb.beglobal.adapter
 
 import android.app.Activity
 import android.content.Context
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.admanager.AdManagerInterstitialAd
@@ -47,6 +48,11 @@ class BeGlobalInterstitialLoader(
         interstitialAdCallback = mediationAdLoadCallback.onSuccess(this)
         mAdManagerInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
 
+            override fun onAdClicked() {
+                super.onAdClicked()
+                interstitialAdCallback.reportAdClicked()
+            }
+
             override fun onAdImpression() {
                 super.onAdImpression()
                 interstitialAdCallback.reportAdImpression()
@@ -54,12 +60,17 @@ class BeGlobalInterstitialLoader(
 
             override fun onAdDismissedFullScreenContent() {
                 super.onAdDismissedFullScreenContent()
-                interstitialAdCallback.onAdOpened()
+                interstitialAdCallback.onAdClosed()
             }
 
             override fun onAdShowedFullScreenContent() {
                 super.onAdShowedFullScreenContent()
-                interstitialAdCallback.onAdClosed()
+                interstitialAdCallback.onAdOpened()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                super.onAdFailedToShowFullScreenContent(p0)
+                interstitialAdCallback.onAdFailedToShow(p0)
             }
         }
     }
