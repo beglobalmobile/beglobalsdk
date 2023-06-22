@@ -14,10 +14,7 @@ class BannerAdSize(var adSize: AdSize) {
         val LEADERBOARD = BannerAdSize(AdSize.LEADERBOARD)
         val MEDIUM_RECTANGLE = BannerAdSize(AdSize.MEDIUM_RECTANGLE)
 
-        fun getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-            context: Context,
-            width: Int
-        ): BannerAdSize {
+        fun getCurrentOrientationAnchoredAdaptiveBannerAdSize(context: Context, width: Int): BannerAdSize {
             return BannerAdSize(
                 AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                     context,
@@ -26,10 +23,7 @@ class BannerAdSize(var adSize: AdSize) {
             )
         }
 
-        fun getCurrentOrientationInlineAdaptiveBannerAdSize(
-            context: Context,
-            width: Int
-        ): BannerAdSize {
+        fun getCurrentOrientationInlineAdaptiveBannerAdSize(context: Context, width: Int): BannerAdSize {
             return BannerAdSize(
                 AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(
                     context,

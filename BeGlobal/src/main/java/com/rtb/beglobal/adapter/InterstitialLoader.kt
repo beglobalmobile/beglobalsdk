@@ -11,28 +11,26 @@ import com.google.android.gms.ads.mediation.MediationAdLoadCallback
 import com.google.android.gms.ads.mediation.MediationInterstitialAd
 import com.google.android.gms.ads.mediation.MediationInterstitialAdCallback
 import com.google.android.gms.ads.mediation.MediationInterstitialAdConfiguration
-import com.rtb.beglobal.common.LogLevel
 import com.rtb.beglobal.sdk.BeGlobalError
+import com.rtb.beglobal.sdk.Logger
 import com.rtb.beglobal.sdk.log
 
-class BeGlobalInterstitialLoader(
-    private val mediationInterstitialAdConfiguration: MediationInterstitialAdConfiguration,
-    private val mediationAdLoadCallback: MediationAdLoadCallback<MediationInterstitialAd, MediationInterstitialAdCallback>
-) : MediationInterstitialAd, AdManagerInterstitialAdLoadCallback() {
+class InterstitialLoader(private val mediationInterstitialAdConfiguration: MediationInterstitialAdConfiguration,
+                         private val mediationAdLoadCallback: MediationAdLoadCallback<MediationInterstitialAd, MediationInterstitialAdCallback>)
+    : MediationInterstitialAd, AdManagerInterstitialAdLoadCallback() {
 
     private lateinit var interstitialAdCallback: MediationInterstitialAdCallback
     private var mAdManagerInterstitialAd: AdManagerInterstitialAd? = null
     private val TAG: String = this::class.java.simpleName
 
     fun loadAd() {
-        LogLevel.INFO.log(TAG, "Begin loading interstitial ad.")
-        val serverParameter =
-            mediationInterstitialAdConfiguration.serverParameters.getString("parameter")
+        Logger.INFO.log(TAG, "Begin loading interstitial ad.")
+        val serverParameter = mediationInterstitialAdConfiguration.serverParameters.getString("parameter")
         if (serverParameter.isNullOrEmpty()) {
             mediationAdLoadCallback.onFailure(BeGlobalError.createCustomEventNoAdIdError())
             return
         }
-        LogLevel.INFO.log(TAG, "Received server parameter. $serverParameter")
+        Logger.INFO.log(TAG, "Received server parameter. $serverParameter")
         val context = mediationInterstitialAdConfiguration.context
         val request = BeGlobalAdapter.createAdRequest(mediationInterstitialAdConfiguration)
         AdManagerInterstitialAd.load(context, serverParameter, request, this)

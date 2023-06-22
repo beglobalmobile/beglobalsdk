@@ -11,8 +11,8 @@ import com.google.android.gms.ads.mediation.MediationAdLoadCallback
 import com.google.android.gms.ads.mediation.MediationAppOpenAd
 import com.google.android.gms.ads.mediation.MediationAppOpenAdCallback
 import com.google.android.gms.ads.mediation.MediationAppOpenAdConfiguration
-import com.rtb.beglobal.common.LogLevel
 import com.rtb.beglobal.sdk.BeGlobalError
+import com.rtb.beglobal.sdk.Logger
 import com.rtb.beglobal.sdk.log
 
 class AppOpenAdLoader(private val mediationAppOpenAdConfiguration: MediationAppOpenAdConfiguration,
@@ -24,13 +24,13 @@ class AppOpenAdLoader(private val mediationAppOpenAdConfiguration: MediationAppO
     private val TAG: String = this::class.java.simpleName
 
     fun loadAd() {
-        LogLevel.INFO.log(TAG, "Begin loading appopen ad.")
+        Logger.INFO.log(TAG, "Begin loading appopen ad.")
         val serverParameter = mediationAppOpenAdConfiguration.serverParameters.getString("parameter")
         if (serverParameter.isNullOrEmpty()) {
             callback.onFailure(BeGlobalError.createCustomEventNoAdIdError())
             return
         }
-        LogLevel.INFO.log(TAG, "Received server parameter. $serverParameter")
+        Logger.INFO.log(TAG, "Received server parameter. $serverParameter")
         val context = mediationAppOpenAdConfiguration.context
         val request = BeGlobalAdapter.createAdRequest(mediationAppOpenAdConfiguration)
         AppOpenAd.load(context, serverParameter, request, this)

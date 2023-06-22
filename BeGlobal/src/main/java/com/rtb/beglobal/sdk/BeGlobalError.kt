@@ -53,10 +53,10 @@ object BeGlobalError {
      * @return an integer in the range 0-99
      */
     private fun getMediationErrorCode(errorCode: ErrorCode) =
-        when (errorCode) {
-            ErrorCode.UNKNOWN -> 0
-            ErrorCode.BAD_REQUEST -> 1
-            ErrorCode.NO_INVENTORY -> 2
-            ErrorCode.NETWORK_ERROR -> 3
-        }
+            when (errorCode) {
+                ErrorCode.UNKNOWN -> 0
+                ErrorCode.BAD_REQUEST -> 1
+                ErrorCode.NO_INVENTORY -> 2
+                ErrorCode.NETWORK_ERROR -> 3
+            }
 }

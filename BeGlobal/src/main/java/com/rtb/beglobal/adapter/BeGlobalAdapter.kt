@@ -6,14 +6,14 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.admanager.AdManagerAdRequest
 import com.google.android.gms.ads.mediation.*
 import com.rtb.beglobal.BuildConfig
-import com.rtb.beglobal.common.LogLevel
+import com.rtb.beglobal.sdk.Logger
 import com.rtb.beglobal.sdk.log
 
 
 class BeGlobalAdapter : Adapter() {
 
-    private lateinit var bannerLoader: BeGlobalBannerLoader
-    private lateinit var interstitialLoader: BeGlobalInterstitialLoader
+    private lateinit var bannerLoader: BannerLoader
+    private lateinit var interstitialLoader: InterstitialLoader
     private lateinit var rewardedLoaded: RewardedLoader
     private lateinit var rewardedInterstitialLoader: RewardedInterstitialLoader
     private lateinit var appOpenAdLoader: AppOpenAdLoader
@@ -27,19 +27,14 @@ class BeGlobalAdapter : Adapter() {
         }
     }
 
-    override fun initialize(
-        context: Context,
-        initializationCompleteCallback: InitializationCompleteCallback,
-        list: List<MediationConfiguration>
-    ) {
-        LogLevel.INFO.log(TAG, "initialize: ${this.javaClass.simpleName}")
+    override fun initialize(context: Context, initializationCompleteCallback: InitializationCompleteCallback, list: List<MediationConfiguration>) {
+        Logger.INFO.log(TAG, "initialize: BeGlobalAdapter")
         return
     }
 
     override fun getVersionInfo(): VersionInfo {
         val versionString = BuildConfig.ADAPTER_VERSION
-        val splits =
-            versionString.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val splits = versionString.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         if (splits.size >= 3) {
             val major = splits[0].toInt()
@@ -59,39 +54,32 @@ class BeGlobalAdapter : Adapter() {
         )
     }
 
-    override fun loadBannerAd(
-        mediationBannerAdConfiguration: MediationBannerAdConfiguration,
-        mediationAdLoadCallback: MediationAdLoadCallback<MediationBannerAd, MediationBannerAdCallback>
-    ) {
-        LogLevel.INFO.log(TAG, "loadBannerAd")
-        bannerLoader = BeGlobalBannerLoader(mediationBannerAdConfiguration, mediationAdLoadCallback)
+    override fun loadBannerAd(mediationBannerAdConfiguration: MediationBannerAdConfiguration, mediationAdLoadCallback: MediationAdLoadCallback<MediationBannerAd, MediationBannerAdCallback>) {
+        Logger.INFO.log(TAG, "loadBannerAd")
+        bannerLoader = BannerLoader(mediationBannerAdConfiguration, mediationAdLoadCallback)
         bannerLoader.loadAd()
     }
 
-    override fun loadInterstitialAd(
-            mediationInterstitialAdConfiguration: MediationInterstitialAdConfiguration,
-            callback: MediationAdLoadCallback<MediationInterstitialAd, MediationInterstitialAdCallback>
-    ) {
-        LogLevel.INFO.log(TAG, "loadInterstitialAd:")
-        interstitialLoader =
-                BeGlobalInterstitialLoader(mediationInterstitialAdConfiguration, callback)
+    override fun loadInterstitialAd(mediationInterstitialAdConfiguration: MediationInterstitialAdConfiguration, callback: MediationAdLoadCallback<MediationInterstitialAd, MediationInterstitialAdCallback>) {
+        Logger.INFO.log(TAG, "loadInterstitialAd:")
+        interstitialLoader = InterstitialLoader(mediationInterstitialAdConfiguration, callback)
         interstitialLoader.loadAd()
     }
 
     override fun loadAppOpenAd(mediationAppOpenAdConfiguration: MediationAppOpenAdConfiguration, callback: MediationAdLoadCallback<MediationAppOpenAd, MediationAppOpenAdCallback>) {
-        LogLevel.INFO.log(TAG, "loadAppOpenAd:")
+        Logger.INFO.log(TAG, "loadAppOpenAd:")
         appOpenAdLoader = AppOpenAdLoader(mediationAppOpenAdConfiguration, callback)
         appOpenAdLoader.loadAd()
     }
 
     override fun loadRewardedAd(mediationRewardedAdConfiguration: MediationRewardedAdConfiguration, callback: MediationAdLoadCallback<MediationRewardedAd, MediationRewardedAdCallback>) {
-        LogLevel.INFO.log(TAG, "loadRewardedAd:")
+        Logger.INFO.log(TAG, "loadRewardedAd:")
         rewardedLoaded = RewardedLoader(mediationRewardedAdConfiguration, callback)
         rewardedLoaded.loadAd()
     }
 
     override fun loadRewardedInterstitialAd(mediationRewardedAdConfiguration: MediationRewardedAdConfiguration, callback: MediationAdLoadCallback<MediationRewardedAd, MediationRewardedAdCallback>) {
-        LogLevel.INFO.log(TAG, "loadRewardedInterstitialAd:")
+        Logger.INFO.log(TAG, "loadRewardedInterstitialAd:")
         rewardedInterstitialLoader = RewardedInterstitialLoader(
             mediationRewardedAdConfiguration,
             callback

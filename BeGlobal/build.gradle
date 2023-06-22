@@ -12,12 +12,12 @@ android {
         targetSdk 32
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        buildConfigField("String", "ADAPTER_VERSION", "\"1.0.1\"")
+        buildConfigField("String", "ADAPTER_VERSION", "\"1.0.3\"")
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -50,7 +50,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
     implementation 'org.prebid:prebid-mobile-sdk:2.1.0'
     implementation 'com.google.ads.mediation:inmobi:10.5.4.1'
-    implementation 'com.github.appharbr:appharbr-android-sdk:2.10.3'
+    implementation 'com.github.appharbr:appharbr-android-sdk:2.12.1'
     //noinspection GradleDependency
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
 
@@ -61,7 +61,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.github.beglobalmobile'
             artifactId = 'beglobalsdk'
-            version = '1.0.2'
+            version = '1.0.3'
 
             afterEvaluate {
                 from components.release

@@ -11,8 +11,8 @@ import com.google.android.gms.ads.mediation.MediationRewardedAdCallback
 import com.google.android.gms.ads.mediation.MediationRewardedAdConfiguration
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback
-import com.rtb.beglobal.common.LogLevel
 import com.rtb.beglobal.sdk.BeGlobalError
+import com.rtb.beglobal.sdk.Logger
 import com.rtb.beglobal.sdk.log
 
 class RewardedInterstitialLoader(private val mediationRewardedAdConfiguration: MediationRewardedAdConfiguration,
@@ -24,13 +24,13 @@ class RewardedInterstitialLoader(private val mediationRewardedAdConfiguration: M
     private val TAG: String = this::class.java.simpleName
 
     fun loadAd() {
-        LogLevel.INFO.log(TAG, "Begin loading rewarded interstitial ad.")
+        Logger.INFO.log(TAG, "Begin loading rewarded interstitial ad.")
         val serverParameter = mediationRewardedAdConfiguration.serverParameters.getString("parameter")
         if (serverParameter.isNullOrEmpty()) {
             mediationAdLoadCallback.onFailure(BeGlobalError.createCustomEventNoAdIdError())
             return
         }
-        LogLevel.INFO.log(TAG, "Received server parameter. $serverParameter")
+        Logger.INFO.log(TAG, "Received server parameter. $serverParameter")
         val context = mediationRewardedAdConfiguration.context
         val request = BeGlobalAdapter.createAdRequest(mediationRewardedAdConfiguration)
         RewardedInterstitialAd.load(context, serverParameter, request, this)

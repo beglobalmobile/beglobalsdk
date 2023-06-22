@@ -46,7 +46,7 @@ class AdRequest {
         }
 
         fun build(): AdRequest {
-            adRequest = requestBuilder.build()
+            adRequest = requestBuilder.addCustomTargeting("ABM_Load", "Yes").build()
             return this@AdRequest
         }
 

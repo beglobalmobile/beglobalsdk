@@ -13,10 +13,10 @@ import com.google.android.gms.ads.admanager.AdManagerAdRequest
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.rtb.beglobal.common.AdRequest
 import com.rtb.beglobal.common.AdTypes
-import com.rtb.beglobal.common.LogLevel
 import com.rtb.beglobal.sdk.AdLoadCallback
 import com.rtb.beglobal.sdk.BeGlobal
 import com.rtb.beglobal.sdk.ConfigSetWorker
+import com.rtb.beglobal.sdk.Logger
 import com.rtb.beglobal.sdk.OnShowAdCompleteListener
 import com.rtb.beglobal.sdk.SDKConfig
 import com.rtb.beglobal.sdk.log
@@ -82,16 +82,16 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
         isLoadingAd = true
         AppOpenAd.load(context, adUnit, adRequest, object : AppOpenAd.AppOpenAdLoadCallback() {
             override fun onAdLoaded(ad: AppOpenAd) {
-                LogLevel.INFO.log(msg = "AppOpen ad loaded")
+                Logger.INFO.log(msg = "AppOpen ad loaded")
                 appOpenAd = ad
                 isLoadingAd = false
                 loadTime = Date().time
-                appOpenConfig.retryConfig = sdkConfig?.retryConfig
+                appOpenConfig.retryConfig = sdkConfig?.retryConfig.also { it?.fillAdUnits() }
                 adLoadCallback?.onAdLoaded()
             }
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                LogLevel.ERROR.log(msg = loadAdError.message)
+                Logger.ERROR.log(msg = loadAdError.message)
                 isLoadingAd = false
                 val tempStatus = firstLook
                 if (firstLook) {
@@ -124,8 +124,7 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
             } else {
                 adLoadCallback?.onAdFailedToLoad("")
                 if ((appOpenConfig.retryConfig?.retries ?: 0) > 0) {
-                    appOpenConfig.retryConfig?.retries =
-                            (appOpenConfig.retryConfig?.retries ?: 0) - 1
+                    appOpenConfig.retryConfig?.retries = (appOpenConfig.retryConfig?.retries ?: 0) - 1
                     Handler(Looper.getMainLooper()).postDelayed({
                         appOpenConfig.retryConfig?.adUnits?.firstOrNull()?.let {
                             appOpenConfig.retryConfig?.adUnits?.removeAt(0)
@@ -148,8 +147,7 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
     @Suppress("UNNECESSARY_SAFE_CALL")
     private fun shouldSetConfig(callback: (Boolean) -> Unit) {
         val workManager = BeGlobal.getWorkManager(context)
-        val workers =
-            workManager.getWorkInfosForUniqueWork(ConfigSetWorker::class.java.simpleName).get()
+        val workers = workManager.getWorkInfosForUniqueWork(ConfigSetWorker::class.java.simpleName).get()
         if (workers.isNullOrEmpty()) {
             callback(false)
         } else {
@@ -181,18 +179,17 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
             config.specific?.equals(
                 loadingAdUnit,
                 true
-            ) == true || config.type == AdTypes.APPOPEN || config.type == "all"
+            ) == true || config.type == AdTypes.APPOPEN || config.type.equals("all", true)
         }
         if (validConfig == null) {
             shouldBeActive = false
             return
         }
-        val networkName =
-            if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format(
-                "%s,%s",
-                sdkConfig?.networkId,
-                sdkConfig?.networkCode
-            )
+        val networkName = if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format(
+            "%s,%s",
+            sdkConfig?.networkId,
+            sdkConfig?.networkCode
+        )
         appOpenConfig.apply {
             customUnitName = String.format(
                 "/%s/%s-%s",
@@ -240,11 +237,11 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
 
     fun showAdIfAvailable(activity: Activity, onShowAdCompleteListener: OnShowAdCompleteListener) {
         if (isShowingAd) {
-            LogLevel.INFO.log(msg = "The app open ad is already showing.")
+            Logger.INFO.log(msg = "The app open ad is already showing.")
             return
         }
         if (!isAdAvailable()) {
-            LogLevel.ERROR.log(msg = "The app open ad is not ready yet.")
+            Logger.ERROR.log(msg = "The app open ad is not ready yet.")
             onShowAdCompleteListener.onShowAdComplete()
             load(activity)
             return
@@ -261,7 +258,7 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 fullScreenContentCallback?.onAdFailedToShowFullScreenContent(adError.message)
-                LogLevel.ERROR.log(msg = adError.message)
+                Logger.ERROR.log(msg = adError.message)
                 appOpenAd = null
                 isShowingAd = false
                 onShowAdCompleteListener.onShowAdComplete()

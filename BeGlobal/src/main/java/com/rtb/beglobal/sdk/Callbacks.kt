@@ -20,7 +20,7 @@ interface FullScreenContentCallback {
 interface BannerAdListener {
     fun onAdClicked()
     fun onAdClosed()
-    fun onAdFailedToLoad(error: String)
+    fun onAdFailedToLoad(error: String, retrying: Boolean)
     fun onAdImpression()
     fun onAdLoaded()
     fun onAdOpened()
@@ -32,6 +32,5 @@ fun interface OnShowAdCompleteListener {
 
 interface AdLoadCallback {
     fun onAdLoaded()
-
     fun onAdFailedToLoad(error: String)
 }

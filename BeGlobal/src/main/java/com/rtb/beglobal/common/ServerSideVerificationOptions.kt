@@ -10,8 +10,7 @@ class ServerSideVerificationOptions {
     }
 
     inner class Builder {
-        private val optionBuilder =
-            com.google.android.gms.ads.rewarded.ServerSideVerificationOptions.Builder()
+        private val optionBuilder = com.google.android.gms.ads.rewarded.ServerSideVerificationOptions.Builder()
 
         fun setCustomData(customData: String): Builder {
             optionBuilder.setCustomData(customData)
