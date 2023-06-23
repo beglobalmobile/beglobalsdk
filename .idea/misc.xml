@@ -1,15 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="..\:/Workspace/RTB/AndBeyondMedia/AndBeyondMedia/src/main/res/layout/ad_manager_view.xml" value="0.35572916666666665" />
-        <entry key="..\:/Workspace/RTB/AndBeyondMedia/app/src/main/res/layout/activity_main.xml" value="0.3416666666666667" />
-        <entry key="..\:/Workspace/RTB/andbeyondmedia/AndBeyondMedia/src/main/res/layout/banner_ad_view.xml" value="0.35572916666666665" />
-        <entry key="..\:/Workspace/RTB/andbeyondmedia/app/src/main/res/layout/activity_main.xml" value="0.35572916666666665" />
-        <entry key="..\:/Workspace/RTB/andbeyondmedia/app/src/main/res/layout/activity_main2.xml" value="0.3416666666666667" />
-      </map>
-    </option>
-  </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
