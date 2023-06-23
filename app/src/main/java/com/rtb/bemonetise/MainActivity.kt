@@ -1,4 +1,4 @@
-package com.rtb.beglobal
+package com.rtb.bemonetise
 
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -7,9 +7,9 @@ import com.rtb.beglobal.banners.BannerAdSize
 import com.rtb.beglobal.banners.BannerAdView
 import com.rtb.beglobal.common.AdRequest
 import com.rtb.beglobal.common.AdTypes
-import com.rtb.beglobal.databinding.ActivityMainBinding
 import com.rtb.beglobal.intersitial.InterstitialAd
 import com.rtb.beglobal.rewardedinterstitial.RewardedInterstitialAd
+import com.rtb.bemonetise.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

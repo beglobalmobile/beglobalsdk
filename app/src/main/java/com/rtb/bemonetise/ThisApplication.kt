@@ -1,4 +1,4 @@
-package com.rtb.beglobal
+package com.rtb.bemonetise
 
 import android.app.Activity
 import android.app.Application
