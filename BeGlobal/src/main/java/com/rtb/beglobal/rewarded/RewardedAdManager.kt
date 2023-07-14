@@ -49,23 +49,15 @@ internal class RewardedAdManager(private val context: Activity, private val adUn
         shouldSetConfig {
             if (it) {
                 setConfig()
-                if (config.isNewUnit) {
+                if (config.isNewUnit && config.newUnit?.status == 1) {
                     createRequest().getAdRequest()?.let { request ->
                         adManagerAdRequest = request
-                        loadAd(
-                            getAdUnitName(false, hijacked = false, newUnit = true),
-                            request,
-                            callBack
-                        )
+                        loadAd(getAdUnitName(false, hijacked = false, newUnit = true), request, callBack)
                     }
                 } else if (config.hijack?.status == 1) {
-                    createRequest().getAdRequest()?.let { request ->
+                    createRequest(hijacked = true).getAdRequest()?.let { request ->
                         adManagerAdRequest = request
-                        loadAd(
-                            getAdUnitName(false, hijacked = true, newUnit = false),
-                            request,
-                            callBack
-                        )
+                        loadAd(getAdUnitName(false, hijacked = true, newUnit = false), request, callBack)
                     }
                 } else {
                     loadAd(adUnit, adManagerAdRequest!!, callBack)
@@ -126,12 +118,8 @@ internal class RewardedAdManager(private val context: Activity, private val adUn
 
     private fun adFailedToLoad(firstLook: Boolean, callBack: (rewardedAd: RewardedAd?) -> Unit) {
         fun requestAd() {
-            createRequest().getAdRequest()?.let {
-                loadAd(
-                    getAdUnitName(unfilled = true, hijacked = false, newUnit = false),
-                    it,
-                    callBack
-                )
+            createRequest(unfilled = true).getAdRequest()?.let {
+                loadAd(getAdUnitName(unfilled = true, hijacked = false, newUnit = false), it, callBack)
             }
         }
         if (config.unFilled?.status == 1) {
@@ -191,28 +179,14 @@ internal class RewardedAdManager(private val context: Activity, private val adUn
             shouldBeActive = false
             return
         }
-        val validConfig = sdkConfig?.refreshConfig?.firstOrNull { config ->
-            config.specific?.equals(
-                adUnit,
-                true
-            ) == true || config.type == AdTypes.REWARDED || config.type.equals("all", true)
-        }
+        val validConfig = sdkConfig?.refreshConfig?.firstOrNull { config -> config.specific?.equals(adUnit, true) == true || config.type == AdTypes.REWARDED || config.type.equals("all", true) }
         if (validConfig == null) {
             shouldBeActive = false
             return
         }
-        val networkName = if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format(
-            "%s,%s",
-            sdkConfig?.networkId,
-            sdkConfig?.networkCode
-        )
+        val networkName = if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format("%s,%s", sdkConfig?.networkId, sdkConfig?.networkCode)
         config.apply {
-            customUnitName = String.format(
-                "/%s/%s-%s",
-                networkName,
-                sdkConfig?.affiliatedId.toString(),
-                validConfig.nameType ?: ""
-            )
+            customUnitName = String.format("/%s/%s-%s", networkName, sdkConfig?.affiliatedId.toString(), validConfig.nameType ?: "")
             position = validConfig.position ?: 0
             isNewUnit = adUnit.contains(sdkConfig?.networkId ?: "")
             placement = validConfig.placement
@@ -224,16 +198,14 @@ internal class RewardedAdManager(private val context: Activity, private val adUn
     }
 
     private fun getAdUnitName(unfilled: Boolean, hijacked: Boolean, newUnit: Boolean): String {
-        return overridingUnit ?: String.format(
-            "%s-%d",
-            config.customUnitName,
-            if (unfilled) config.unFilled?.number else if (newUnit) config.newUnit?.number else if (hijacked) config.hijack?.number else config.position
-        )
+        return overridingUnit ?: String.format("%s-%d", config.customUnitName, if (unfilled) config.unFilled?.number else if (newUnit) config.newUnit?.number else if (hijacked) config.hijack?.number else config.position)
     }
 
-    private fun createRequest() = AdRequest().Builder().apply {
+    private fun createRequest(unfilled: Boolean = false, hijacked: Boolean = false) = AdRequest().Builder().apply {
         addCustomTargeting("adunit", adUnit)
         addCustomTargeting("hb_format", "video")
+        if (unfilled) addCustomTargeting("retry", "1")
+        if (hijacked) addCustomTargeting("hijack", "1")
     }.build()
 
     private fun fetchDemand(adRequest: AdManagerAdRequest, callback: () -> Unit) {

@@ -51,23 +51,15 @@ internal class RewardedInterstitialAdManager(private val context: Activity, priv
         shouldSetConfig {
             if (it) {
                 setConfig()
-                if (config.isNewUnit) {
+                if (config.isNewUnit && config.newUnit?.status == 1) {
                     createRequest().getAdRequest()?.let { request ->
                         adManagerAdRequest = request
-                        loadAd(
-                            getAdUnitName(false, hijacked = false, newUnit = true),
-                            request,
-                            callBack
-                        )
+                        loadAd(getAdUnitName(false, hijacked = false, newUnit = true), request, callBack)
                     }
                 } else if (config.hijack?.status == 1) {
-                    createRequest().getAdRequest()?.let { request ->
+                    createRequest(hijacked = true).getAdRequest()?.let { request ->
                         adManagerAdRequest = request
-                        loadAd(
-                            getAdUnitName(false, hijacked = true, newUnit = false),
-                            request,
-                            callBack
-                        )
+                        loadAd(getAdUnitName(false, hijacked = true, newUnit = false), request, callBack)
                     }
                 } else {
                     loadAd(adUnit, adManagerAdRequest!!, callBack)
@@ -81,32 +73,28 @@ internal class RewardedInterstitialAdManager(private val context: Activity, priv
     private fun loadAd(adUnit: String, adRequest: AdManagerAdRequest, callBack: (rewardedInterstitialAd: RewardedInterstitialAd?) -> Unit) {
         otherUnit = adUnit != this.adUnit
         fetchDemand(adRequest) {
-            RewardedInterstitialAd.load(
-                context,
-                adUnit,
-                adRequest,
-                object : RewardedInterstitialAdLoadCallback() {
-                    override fun onAdLoaded(ad: RewardedInterstitialAd) {
-                        config.retryConfig = sdkConfig?.retryConfig.also { it?.fillAdUnits() }
-                        addGeoEdge(ad, firstLook)
-                        callBack(ad)
+            RewardedInterstitialAd.load(context, adUnit, adRequest, object : RewardedInterstitialAdLoadCallback() {
+                override fun onAdLoaded(ad: RewardedInterstitialAd) {
+                    config.retryConfig = sdkConfig?.retryConfig.also { it?.fillAdUnits() }
+                    addGeoEdge(ad, firstLook)
+                    callBack(ad)
+                    firstLook = false
+                }
+
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Logger.ERROR.log(msg = adError.message)
+                    val tempStatus = firstLook
+                    if (firstLook) {
                         firstLook = false
                     }
-
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        Logger.ERROR.log(msg = adError.message)
-                        val tempStatus = firstLook
-                        if (firstLook) {
-                            firstLook = false
-                        }
-                        try {
-                            adFailedToLoad(tempStatus, callBack)
-                        } catch (e: Throwable) {
-                            e.printStackTrace()
-                            callBack(null)
-                        }
+                    try {
+                        adFailedToLoad(tempStatus, callBack)
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                        callBack(null)
                     }
-                })
+                }
+            })
         }
     }
 
@@ -132,12 +120,8 @@ internal class RewardedInterstitialAdManager(private val context: Activity, priv
 
     private fun adFailedToLoad(firstLook: Boolean, callBack: (rewardedInterstitialAd: RewardedInterstitialAd?) -> Unit) {
         fun requestAd() {
-            createRequest().getAdRequest()?.let {
-                loadAd(
-                    getAdUnitName(unfilled = true, hijacked = false, newUnit = false),
-                    it,
-                    callBack
-                )
+            createRequest(unfilled = true).getAdRequest()?.let {
+                loadAd(getAdUnitName(unfilled = true, hijacked = false, newUnit = false), it, callBack)
             }
         }
         if (config.unFilled?.status == 1) {
@@ -198,31 +182,14 @@ internal class RewardedInterstitialAdManager(private val context: Activity, priv
             shouldBeActive = false
             return
         }
-        val validConfig = sdkConfig?.refreshConfig?.firstOrNull { config ->
-            config.specific?.equals(
-                adUnit,
-                true
-            ) == true || config.type == AdTypes.REWARDEDINTERSTITIAL || config.type.equals(
-                "all",
-                true
-            )
-        }
+        val validConfig = sdkConfig?.refreshConfig?.firstOrNull { config -> config.specific?.equals(adUnit, true) == true || config.type == AdTypes.REWARDEDINTERSTITIAL || config.type.equals("all", true) }
         if (validConfig == null) {
             shouldBeActive = false
             return
         }
-        val networkName = if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format(
-            "%s,%s",
-            sdkConfig?.networkId,
-            sdkConfig?.networkCode
-        )
+        val networkName = if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format("%s,%s", sdkConfig?.networkId, sdkConfig?.networkCode)
         config.apply {
-            customUnitName = String.format(
-                "/%s/%s-%s",
-                networkName,
-                sdkConfig?.affiliatedId.toString(),
-                validConfig.nameType ?: ""
-            )
+            customUnitName = String.format("/%s/%s-%s", networkName, sdkConfig?.affiliatedId.toString(), validConfig.nameType ?: "")
             position = validConfig.position ?: 0
             isNewUnit = adUnit.contains(sdkConfig?.networkId ?: "")
             placement = validConfig.placement
@@ -234,24 +201,19 @@ internal class RewardedInterstitialAdManager(private val context: Activity, priv
     }
 
     private fun getAdUnitName(unfilled: Boolean, hijacked: Boolean, newUnit: Boolean): String {
-        return overridingUnit ?: String.format(
-            "%s-%d",
-            config.customUnitName,
-            if (unfilled) config.unFilled?.number else if (newUnit) config.newUnit?.number else if (hijacked) config.hijack?.number else config.position
-        )
+        return overridingUnit ?: String.format("%s-%d", config.customUnitName, if (unfilled) config.unFilled?.number else if (newUnit) config.newUnit?.number else if (hijacked) config.hijack?.number else config.position)
     }
 
-    private fun createRequest() = AdRequest().Builder().apply {
+    private fun createRequest(unfilled: Boolean = false, hijacked: Boolean = false) = AdRequest().Builder().apply {
         addCustomTargeting("adunit", adUnit)
         addCustomTargeting("hb_format", "video")
+        if (unfilled) addCustomTargeting("retry", "1")
+        if (hijacked) addCustomTargeting("hijack", "1")
     }.build()
 
     private fun fetchDemand(adRequest: AdManagerAdRequest, callback: () -> Unit) {
         if ((!otherUnit && sdkConfig?.prebid?.firstLook == 1) || (otherUnit && sdkConfig?.prebid?.other == 1)) {
-            val adUnit = InterstitialAdUnit(
-                (if (otherUnit) config.placement?.other ?: 0 else config.placement?.firstLook ?: 0).toString(),
-                EnumSet.of(AdUnitFormat.VIDEO)
-            )
+            val adUnit = InterstitialAdUnit((if (otherUnit) config.placement?.other ?: 0 else config.placement?.firstLook ?: 0).toString(), EnumSet.of(AdUnitFormat.VIDEO))
             adUnit.fetchDemand(adRequest) { callback() }
         } else {
             callback()

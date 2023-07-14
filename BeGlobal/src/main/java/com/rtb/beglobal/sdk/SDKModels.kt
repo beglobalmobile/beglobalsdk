@@ -33,6 +33,8 @@ internal data class SDKConfig(
         var passiveRefreshInterval: Int? = null,
         @SerializedName("factor")
         val factor: Int? = null,
+        @SerializedName("active_factor")
+        val visibleFactor: Int? = null,
         @SerializedName("min_view")
         val minView: Int? = null,
         @SerializedName("min_view_rtb")
@@ -44,7 +46,9 @@ internal data class SDKConfig(
         @SerializedName("hijack")
         val hijackConfig: LoadConfigs? = null,
         @SerializedName("unfilled")
-        val unfilledConfig: LoadConfigs? = null
+        val unfilledConfig: LoadConfigs? = null,
+        @SerializedName("supported_sizes")
+        val supportedSizes: List<Size>? = null
 ) {
 
     @Keep

@@ -15,21 +15,11 @@ class BannerAdSize(var adSize: AdSize) {
         val MEDIUM_RECTANGLE = BannerAdSize(AdSize.MEDIUM_RECTANGLE)
 
         fun getCurrentOrientationAnchoredAdaptiveBannerAdSize(context: Context, width: Int): BannerAdSize {
-            return BannerAdSize(
-                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                    context,
-                    width
-                )
-            )
+            return BannerAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, width))
         }
 
         fun getCurrentOrientationInlineAdaptiveBannerAdSize(context: Context, width: Int): BannerAdSize {
-            return BannerAdSize(
-                AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(
-                    context,
-                    width
-                )
-            )
+            return BannerAdSize(AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(context, width))
         }
 
         fun getCurrentOrientationInterscrollerAdSize(context: Context, width: Int): BannerAdSize {

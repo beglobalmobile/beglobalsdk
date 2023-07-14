@@ -50,20 +50,11 @@ class BannerAdView : LinearLayout, BannerManagerListener {
         init(context, attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init(context, attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(
-        context,
-        attrs,
-        defStyleAttr,
-        defStyleRes
-    ) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
         init(context, attrs)
     }
 
@@ -154,11 +145,7 @@ class BannerAdView : LinearLayout, BannerManagerListener {
         if (firstLook) {
             bannerManager.shouldSetConfig {
                 if (it) {
-                    bannerManager.setConfig(
-                        currentAdUnit,
-                        currentAdSizes as ArrayList<AdSize>,
-                        adType
-                    )
+                    bannerManager.setConfig(currentAdUnit, currentAdSizes as ArrayList<AdSize>, adType)
                     adRequest = bannerManager.checkOverride() ?: adRequest
                     bannerManager.checkGeoEdge(true) { addGeoEdge(true) }
                 }
@@ -182,9 +169,7 @@ class BannerAdView : LinearLayout, BannerManagerListener {
                 override fun onAdIncident(view: Any?, unitId: String?, adNetwork: AdSdk?, creativeId: String?, adFormat: AdFormat, blockReasons: Array<out AdBlockReason>, reportReasons: Array<out AdBlockReason>) {
                     log { "Banner: onAdIncident : ${Gson().toJson(reportReasons.asList().map { it.reason })}" }
                     if (firstLook) {
-                        bannerManager.adReported(
-                            creativeId,
-                            reportReasons.asList().map { it.reason })
+                        bannerManager.adReported(creativeId, reportReasons.asList().map { it.reason })
                     }
                 }
             })
@@ -230,12 +215,9 @@ class BannerAdView : LinearLayout, BannerManagerListener {
 
         override fun onAdImpression() {
             super.onAdImpression()
+            bannerManager.adImpressed()
             if (bannerManager.allowCallback(isRefreshLoaded)) {
                 bannerAdListener?.onAdImpression()
-            }
-            bannerManager.adLoaded(firstLook, adView.responseInfo?.loadedAdapterResponseInfo)
-            if (firstLook) {
-                firstLook = false
             }
         }
 

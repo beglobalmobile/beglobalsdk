@@ -37,13 +37,7 @@ object BeGlobal {
     internal fun getStoreService(context: Context): StoreService {
         @Synchronized
         if (storeService == null) {
-            storeService = StoreService(
-                context.getSharedPreferences(
-                    this.toString().substringBefore(
-                        "@"
-                    ), Context.MODE_PRIVATE
-                )
-            )
+            storeService = StoreService(context.getSharedPreferences(this.toString().substringBefore("@"), Context.MODE_PRIVATE))
         }
         return storeService as StoreService
     }
@@ -74,10 +68,7 @@ object BeGlobal {
         try {
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
             val workerRequest: OneTimeWorkRequest = delay?.let {
-                OneTimeWorkRequestBuilder<ConfigSetWorker>().setConstraints(constraints).setInitialDelay(
-                    it,
-                    TimeUnit.SECONDS
-                ).build()
+                OneTimeWorkRequestBuilder<ConfigSetWorker>().setConstraints(constraints).setInitialDelay(it, TimeUnit.SECONDS).build()
             } ?: kotlin.run {
                 OneTimeWorkRequestBuilder<ConfigSetWorker>().setConstraints(constraints).build()
             }
@@ -105,10 +96,7 @@ object BeGlobal {
     }
 }
 
-internal class ConfigSetWorker(private val context: Context, params: WorkerParameters) : Worker(
-    context,
-    params
-) {
+internal class ConfigSetWorker(private val context: Context, params: WorkerParameters) : Worker(context, params) {
     override fun doWork(): Result {
         val storeService = BeGlobal.getStoreService(context)
         return try {
@@ -164,19 +152,16 @@ internal object SDKManager {
     private fun initializeGeoEdge(context: Context, apiKey: String?) {
         if (apiKey.isNullOrEmpty()) return
         val configuration = AHSdkConfiguration.Builder(apiKey).build()
-        AppHarbr.initialize(
-            context,
-            configuration,
-            object : OnAppHarbrInitializationCompleteListener {
-                override fun onSuccess() {
-                    Logger.INFO.log(msg = "AppHarbr SDK Initialized Successfully")
-                }
+        AppHarbr.initialize(context, configuration, object : OnAppHarbrInitializationCompleteListener {
+            override fun onSuccess() {
+                Logger.INFO.log(msg = "AppHarbr SDK Initialized Successfully")
+            }
 
-                override fun onFailure(reason: InitializationFailureReason) {
-                    Logger.ERROR.log(msg = "AppHarbr SDK Initialization Failed: ${reason.readableHumanReason}")
-                }
+            override fun onFailure(reason: InitializationFailureReason) {
+                Logger.ERROR.log(msg = "AppHarbr SDK Initialization Failed: ${reason.readableHumanReason}")
+            }
 
-            })
+        })
     }
 }
 
@@ -194,11 +179,6 @@ internal class StoreService(private val prefs: SharedPreferences) {
             return Gson().fromJson(string, SDKConfig::class.java)
         }
         set(value) = prefs.edit().apply {
-            value?.let {
-                putString(
-                    "CONFIG",
-                    Gson().toJson(value)
-                )
-            } ?: kotlin.run { remove("CONFIG") }
+            value?.let { putString("CONFIG", Gson().toJson(value)) } ?: kotlin.run { remove("CONFIG") }
         }.apply()
 }

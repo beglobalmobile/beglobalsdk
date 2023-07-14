@@ -49,25 +49,15 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
         shouldSetConfig {
             if (it) {
                 setConfig()
-                if (appOpenConfig.isNewUnit) {
+                if (appOpenConfig.isNewUnit && appOpenConfig.newUnit?.status == 1) {
                     createRequest().getAdRequest()?.let { request ->
                         adManagerAdRequest = request
-                        loadAd(
-                            context,
-                            getAdUnitName(false, hijacked = false, newUnit = true),
-                            adManagerAdRequest,
-                            adLoadCallback
-                        )
+                        loadAd(context, getAdUnitName(false, hijacked = false, newUnit = true), adManagerAdRequest, adLoadCallback)
                     }
                 } else if (appOpenConfig.hijack?.status == 1) {
-                    createRequest().getAdRequest()?.let { request ->
+                    createRequest(hijacked = true).getAdRequest()?.let { request ->
                         adManagerAdRequest = request
-                        loadAd(
-                            context,
-                            getAdUnitName(false, hijacked = true, newUnit = false),
-                            adManagerAdRequest,
-                            adLoadCallback
-                        )
+                        loadAd(context, getAdUnitName(false, hijacked = true, newUnit = false), adManagerAdRequest, adLoadCallback)
                     }
                 } else {
                     loadAd(context, loadingAdUnit!!, adManagerAdRequest, adLoadCallback)
@@ -109,13 +99,8 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
 
     private fun adFailedToLoad(context: Context, firstLook: Boolean, adLoadCallback: AdLoadCallback?) {
         fun requestAd() {
-            createRequest().getAdRequest()?.let {
-                loadAd(
-                    context,
-                    getAdUnitName(unfilled = true, hijacked = false, newUnit = false),
-                    it,
-                    adLoadCallback
-                )
+            createRequest(unfilled = true).getAdRequest()?.let {
+                loadAd(context, getAdUnitName(unfilled = true, hijacked = false, newUnit = false), it, adLoadCallback)
             }
         }
         if (appOpenConfig.unFilled?.status == 1) {
@@ -176,27 +161,15 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
             return
         }
         val validConfig = sdkConfig?.refreshConfig?.firstOrNull { config ->
-            config.specific?.equals(
-                loadingAdUnit,
-                true
-            ) == true || config.type == AdTypes.APPOPEN || config.type.equals("all", true)
+            config.specific?.equals(loadingAdUnit, true) == true || config.type == AdTypes.APPOPEN || config.type.equals("all", true)
         }
         if (validConfig == null) {
             shouldBeActive = false
             return
         }
-        val networkName = if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format(
-            "%s,%s",
-            sdkConfig?.networkId,
-            sdkConfig?.networkCode
-        )
+        val networkName = if (sdkConfig?.networkCode.isNullOrEmpty()) sdkConfig?.networkId else String.format("%s,%s", sdkConfig?.networkId, sdkConfig?.networkCode)
         appOpenConfig.apply {
-            customUnitName = String.format(
-                "/%s/%s-%s",
-                networkName,
-                sdkConfig?.affiliatedId.toString(),
-                validConfig.nameType ?: ""
-            )
+            customUnitName = String.format("/%s/%s-%s", networkName, sdkConfig?.affiliatedId.toString(), validConfig.nameType ?: "")
             position = validConfig.position ?: 0
             isNewUnit = loadingAdUnit?.contains(sdkConfig?.networkId ?: "") ?: false
             retryConfig = sdkConfig?.retryConfig.also { it?.fillAdUnits() }
@@ -216,16 +189,14 @@ class AppOpenAdManager(private val context: Context, adUnit: String?) {
     }
 
     private fun getAdUnitName(unfilled: Boolean, hijacked: Boolean, newUnit: Boolean): String {
-        return overridingUnit ?: String.format(
-            "%s-%d",
-            appOpenConfig.customUnitName,
-            if (unfilled) appOpenConfig.unFilled?.number else if (newUnit) appOpenConfig.newUnit?.number else if (hijacked) appOpenConfig.hijack?.number else appOpenConfig.position
-        )
+        return overridingUnit ?: String.format("%s-%d", appOpenConfig.customUnitName, if (unfilled) appOpenConfig.unFilled?.number else if (newUnit) appOpenConfig.newUnit?.number else if (hijacked) appOpenConfig.hijack?.number else appOpenConfig.position)
     }
 
-    private fun createRequest() = AdRequest().Builder().apply {
+    private fun createRequest(unfilled: Boolean = false, hijacked: Boolean = false) = AdRequest().Builder().apply {
         addCustomTargeting("adunit", loadingAdUnit ?: "")
         addCustomTargeting("hb_format", "amp")
+        if (unfilled) addCustomTargeting("retry", "1")
+        if (hijacked) addCustomTargeting("hijack", "1")
     }.build()
 
     private fun wasLoadTimeLessThanNHoursAgo(numHours: Long): Boolean {
